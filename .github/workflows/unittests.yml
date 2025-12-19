@@ -33,4 +33,4 @@ jobs:
           fi
       - name: Run tests
         run: |
-          pytest
+          python -m pytest tests/ -v --tb=short
