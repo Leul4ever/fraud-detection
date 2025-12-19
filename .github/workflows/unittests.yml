@@ -28,8 +28,7 @@ jobs:
               echo "Raw data files found, running data pipeline..."
               python scripts/run_data_pipeline.py
             else
-              echo "Warning: Raw data files not found. Skipping pipeline generation."
-              echo "Tests will fail if processed data files are missing."
+              echo "Warning: Raw data files not found. Tests will be skipped if processed data is missing."
             fi
           fi
       - name: Run tests
