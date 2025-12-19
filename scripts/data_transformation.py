@@ -9,6 +9,10 @@ def transform_fraud_data():
     print("Transforming Fraud_Data...")
     df = pd.read_csv('data/processed/Fraud_Data_features.csv')
     
+    # Ensure models directory exists
+    from pathlib import Path
+    Path('models').mkdir(parents=True, exist_ok=True)
+    
     # Drop unnecessary columns
     cols_to_drop = ['user_id', 'signup_time', 'purchase_time', 'device_id', 'ip_address']
     df = df.drop(cols_to_drop, axis=1)
@@ -20,7 +24,7 @@ def transform_fraud_data():
     df = pd.get_dummies(df, columns=cat_cols, drop_first=True)
     
     # Separate features and target
-    X = df.drop('class', axis=1)
+    X = df.drop('class', axis=1).astype(float)
     y = df['class']
     
     # Split
@@ -29,8 +33,8 @@ def transform_fraud_data():
     # Scale
     scaler = StandardScaler()
     num_cols = ['purchase_value', 'age', 'time_since_signup', 'hour_of_day', 'day_of_week', 'user_id_count', 'device_id_count']
-    X_train[num_cols] = scaler.fit_transform(X_train[num_cols])
-    X_test[num_cols] = scaler.transform(X_test[num_cols])
+    X_train.loc[:, num_cols] = scaler.fit_transform(X_train[num_cols])
+    X_test.loc[:, num_cols] = scaler.transform(X_test[num_cols])
     
     # Handle Class Imbalance (SMOTE on training only)
     print(f"Class distribution before SMOTE: {y_train.value_counts().to_dict()}")
@@ -53,7 +57,7 @@ def transform_creditcard_data():
     df = pd.read_csv('data/processed/creditcard_features.csv')
     
     # Features and target
-    X = df.drop('Class', axis=1)
+    X = df.drop('Class', axis=1).astype(float)
     y = df['Class']
     
     # Split
@@ -61,8 +65,8 @@ def transform_creditcard_data():
     
     # Scale Time and Amount
     scaler = StandardScaler()
-    X_train[['Time', 'Amount']] = scaler.fit_transform(X_train[['Time', 'Amount']])
-    X_test[['Time', 'Amount']] = scaler.transform(X_test[['Time', 'Amount']])
+    X_train.loc[:, ['Time', 'Amount']] = scaler.fit_transform(X_train[['Time', 'Amount']])
+    X_test.loc[:, ['Time', 'Amount']] = scaler.transform(X_test[['Time', 'Amount']])
     
     # Handle Class Imbalance (SMOTE on training only)
     print(f"Class distribution before SMOTE: {y_train.value_counts().to_dict()}")

@@ -50,11 +50,12 @@ fraud-detection/
 
 ## 📈 Roadmap (Tasks)
 
-### Task 1: Data Preprocessing & EDA 🔍
+### Task 1: Data Preprocessing & EDA ✅ (Completed)
 - **Data Cleaning:** Handled missing values, duplicates, and type mismatches across E-commerce and Credit Card datasets.
 - **Exploratory Data Analysis (EDA):** Visualized transaction distributions, fraud correlation, and temporal patterns.
 - **Feature Engineering:** Integrated geolocation by matching IP addresses to countries; extracted time-based features (hour, day) and transaction velocity (user/device frequency).
 - **Data Transformation:** Applied scaling, encoding, and SMOTE to address extreme class imbalance.
+- **Verification:** Full pipeline implemented in `scripts/` and verified with comprehensive `pytest` suite in CI.
 
 ### Task 2-5: Coming Soon...
 - Model Building & Training (Supervised & Unsupervised)

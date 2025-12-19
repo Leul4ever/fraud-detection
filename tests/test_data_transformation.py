@@ -115,13 +115,14 @@ def test_numerical_scaling_fraud(fraud_X_test):
     assert scaled_count > 0, "No numerical columns found for scaling verification"
 
 
-def test_numerical_scaling_credit(credit_X_train):
-    """Verify Time and Amount are scaled in Credit Card data"""
+def test_numerical_scaling_credit(credit_X_test):
+    """Verify Time and Amount are scaled in Credit Card data (using test set)"""
     # Time and Amount should be scaled
+    # We use the test set because the training set mean shifts after SMOTE
     for col in ['Time', 'Amount']:
-        if col in credit_X_train.columns:
-            mean = credit_X_train[col].mean()
-            std = credit_X_train[col].std()
+        if col in credit_X_test.columns:
+            mean = credit_X_test[col].mean()
+            std = credit_X_test[col].std()
             
             assert abs(mean) < 0.5, f"Column '{col}' mean {mean:.2f} is not close to 0"
             assert 0.5 < std < 1.5, f"Column '{col}' std {std:.2f} is not close to 1"

@@ -40,6 +40,10 @@ if __name__ == "__main__":
     fraud_df = pd.read_csv('data/raw/Fraud_Data.csv')
     credit_df = pd.read_csv('data/raw/creditcard.csv')
     
+    # Ensure processed directory exists
+    from pathlib import Path
+    Path('data/processed').mkdir(parents=True, exist_ok=True)
+    
     # Clean
     fraud_df_cleaned = clean_fraud_data(fraud_df)
     credit_df_cleaned = clean_credit_card_data(credit_df)
