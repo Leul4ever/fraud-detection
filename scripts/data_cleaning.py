@@ -1,4 +1,4 @@
-import pandas as pd
+GUimport pandas as pd
 import numpy as np
 
 def clean_fraud_data(df):
