@@ -17,7 +17,21 @@ jobs:
           pip install -r requirements.txt
       - name: Generate processed data
         run: |
-          python scripts/run_data_pipeline.py
+          # Check if processed data files already exist
+          if [ -f "data/processed/Fraud_Data_cleaned.csv" ] && [ -f "data/processed/creditcard_cleaned.csv" ] && \
+             [ -f "data/processed/Fraud_Data_features.csv" ] && [ -f "data/processed/Fraud_X_train.csv" ] && \
+             [ -f "data/processed/Credit_X_train.csv" ]; then
+            echo "Processed data files already exist, skipping pipeline generation."
+          else
+            # Check if raw data files exist
+            if [ -f "data/raw/Fraud_Data.csv" ] && [ -f "data/raw/creditcard.csv" ] && [ -f "data/raw/IpAddress_to_Country.csv" ]; then
+              echo "Raw data files found, running data pipeline..."
+              python scripts/run_data_pipeline.py
+            else
+              echo "Warning: Raw data files not found. Skipping pipeline generation."
+              echo "Tests will fail if processed data files are missing."
+            fi
+          fi
       - name: Run tests
         run: |
           pytest
