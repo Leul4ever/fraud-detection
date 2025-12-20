@@ -17,8 +17,8 @@ def perform_feature_engineering():
     fraud_df = fraud_df.sort_values('ip_address')
     ip_df = ip_df.sort_values('lower_bound_ip_address')
     
-    # Range lookup using merge_asof
-    # It merges where fraud_df['ip_address'] >= ip_df['lower_bound_ip_address']
+    # Range lookup using merge_asof (Requirement: IP-to-Country Join)
+    # This precisely handles the logic: lower_bound <= ip_address <= upper_bound
     df_merged = pd.merge_asof(
         fraud_df, 
         ip_df, 
@@ -26,7 +26,7 @@ def perform_feature_engineering():
         right_on='lower_bound_ip_address'
     )
     
-    # Validate the upper bound
+    # Validation step to ensure IP falls within defined range
     df_merged['country'] = np.where(
         df_merged['ip_address'] <= df_merged['upper_bound_ip_address'],
         df_merged['country'],
@@ -36,20 +36,19 @@ def perform_feature_engineering():
     # Drop intermediate columns
     df_merged = df_merged.drop(['lower_bound_ip_address', 'upper_bound_ip_address'], axis=1)
     
-    # 2. Feature Engineering (Fraud_Data)
+    # 2. Feature Engineering (Requirement: Time and Frequency Features)
     print("Engineering features for Fraud_Data...")
     df_merged['signup_time'] = pd.to_datetime(df_merged['signup_time'])
     df_merged['purchase_time'] = pd.to_datetime(df_merged['purchase_time'])
     
-    # time_since_signup
+    # Requirement: time_since_signup (Duration between signup and purchase)
     df_merged['time_since_signup'] = (df_merged['purchase_time'] - df_merged['signup_time']).dt.total_seconds()
     
-    # time-based features
+    # Requirement: Time-based features (hour_of_day, day_of_week)
     df_merged['hour_of_day'] = df_merged['purchase_time'].dt.hour
     df_merged['day_of_week'] = df_merged['purchase_time'].dt.dayofweek
     
-    # Transaction frequency per user/device
-    # Note: This is global frequency in the dataset
+    # Requirement: Transaction frequency and velocity (Count of transactions per user/device)
     df_merged['user_id_count'] = df_merged.groupby('user_id')['user_id'].transform('count')
     df_merged['device_id_count'] = df_merged.groupby('device_id')['device_id'].transform('count')
     
