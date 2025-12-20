@@ -10,3 +10,4 @@ lightgbm
 scipy
 pytest
 jupyter
+jinja2
