@@ -1,24 +1,31 @@
 import pandas as pd
 import numpy as np
+from typing import Tuple
+from pathlib import Path
 
-def perform_feature_engineering():
-    print("Loading data for feature engineering...")
-    fraud_df = pd.read_csv('data/processed/Fraud_Data_cleaned.csv')
-    ip_df = pd.read_csv('data/raw/IpAddress_to_Country.csv')
+def integrate_geolocation(fraud_df: pd.DataFrame, ip_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Merges fraud data with IP-to-country mapping using range-based lookup.
     
-    # 1. Geolocation Integration
+    Args:
+        fraud_df (pd.DataFrame): Cleaned fraud data.
+        ip_df (pd.DataFrame): IP-to-country mapping data.
+        
+    Returns:
+        pd.DataFrame: Fraud data with country information.
+    """
     print("Integrating geolocation...")
-    # Convert IP to int64 to ensure matching types
-    fraud_df['ip_address'] = fraud_df['ip_address'].astype(np.int64)
-    ip_df['lower_bound_ip_address'] = ip_df['lower_bound_ip_address'].astype(np.int64)
-    ip_df['upper_bound_ip_address'] = ip_df['upper_bound_ip_address'].astype(np.int64)
     
+    # Ensure types match for merge_asof
+    fraud_df['ip_address'] = fraud_df['ip_address'].astype(np.int64)
+    for col in ['lower_bound_ip_address', 'upper_bound_ip_address']:
+        ip_df[col] = ip_df[col].astype(np.int64)
+        
     # Sort for merge_asof
     fraud_df = fraud_df.sort_values('ip_address')
     ip_df = ip_df.sort_values('lower_bound_ip_address')
     
-    # Range lookup using merge_asof (Requirement: IP-to-Country Join)
-    # This precisely handles the logic: lower_bound <= ip_address <= upper_bound
+    # Range lookup
     df_merged = pd.merge_asof(
         fraud_df, 
         ip_df, 
@@ -26,42 +33,68 @@ def perform_feature_engineering():
         right_on='lower_bound_ip_address'
     )
     
-    # Validation step to ensure IP falls within defined range
+    # Validate range
     df_merged['country'] = np.where(
         df_merged['ip_address'] <= df_merged['upper_bound_ip_address'],
         df_merged['country'],
         'Unknown'
     )
     
-    # Drop intermediate columns
-    df_merged = df_merged.drop(['lower_bound_ip_address', 'upper_bound_ip_address'], axis=1)
+    return df_merged.drop(['lower_bound_ip_address', 'upper_bound_ip_address'], axis=1)
+
+def engineer_fraud_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Computes time-based and frequency-based features for fraud detection.
     
-    # 2. Feature Engineering (Requirement: Time and Frequency Features)
+    Args:
+        df (pd.DataFrame): Fraud data with geolocation.
+        
+    Returns:
+        pd.DataFrame: Data with engineered features.
+    """
     print("Engineering features for Fraud_Data...")
-    df_merged['signup_time'] = pd.to_datetime(df_merged['signup_time'])
-    df_merged['purchase_time'] = pd.to_datetime(df_merged['purchase_time'])
     
-    # Requirement: time_since_signup (Duration between signup and purchase)
-    df_merged['time_since_signup'] = (df_merged['purchase_time'] - df_merged['signup_time']).dt.total_seconds()
+    # Duration between signup and purchase
+    df['time_since_signup'] = (df['purchase_time'] - df['signup_time']).dt.total_seconds()
     
-    # Requirement: Time-based features (hour_of_day, day_of_week)
-    df_merged['hour_of_day'] = df_merged['purchase_time'].dt.hour
-    df_merged['day_of_week'] = df_merged['purchase_time'].dt.dayofweek
+    # Time-based features
+    df['hour_of_day'] = df['purchase_time'].dt.hour
+    df['day_of_week'] = df['purchase_time'].dt.dayofweek
     
-    # Requirement: Transaction frequency and velocity (Count of transactions per user/device)
-    df_merged['user_id_count'] = df_merged.groupby('user_id')['user_id'].transform('count')
-    df_merged['device_id_count'] = df_merged.groupby('device_id')['device_id'].transform('count')
+    # Frequency/Velocity features
+    df['user_id_count'] = df.groupby('user_id')['user_id'].transform('count')
+    df['device_id_count'] = df.groupby('device_id')['device_id'].transform('count')
     
-    # Save processed data
-    print("Saving feature-engineered data...")
-    df_merged.to_csv('data/processed/Fraud_Data_features.csv', index=False)
+    return df
+
+def perform_feature_engineering():
+    """Main orchestration for feature engineering task."""
+    DATA_DIR = Path('data')
     
-    # Credit Card Data doesn't need much feature engineering as per PCA, 
-    # but we can copy it to the same stage for consistency if needed.
-    credit_df = pd.read_csv('data/processed/creditcard_cleaned.csv')
-    credit_df.to_csv('data/processed/creditcard_features.csv', index=False)
-    
-    print("Feature engineering complete.")
+    try:
+        # Load
+        fraud_df = pd.read_csv(DATA_DIR / 'processed/Fraud_Data_cleaned.csv')
+        ip_df = pd.read_csv(DATA_DIR / 'raw/IpAddress_to_Country.csv')
+        
+        # Geolocation
+        df_geo = integrate_geolocation(fraud_df, ip_df)
+        
+        # Features
+        df_final = engineer_fraud_features(df_geo)
+        
+        # Save
+        df_final.to_csv(DATA_DIR / 'processed/Fraud_Data_features.csv', index=False)
+        
+        # Credit Card (Copy cleaned to features stage)
+        credit_df = pd.read_csv(DATA_DIR / 'processed/creditcard_cleaned.csv')
+        credit_df.to_csv(DATA_DIR / 'processed/creditcard_features.csv', index=False)
+        
+        print("✓ Feature engineering complete.")
+        
+    except FileNotFoundError as e:
+        print(f"Error: Required file missing for feature engineering. {e}")
+    except Exception as e:
+        print(f"Unexpected error in feature engineering: {e}")
 
 if __name__ == "__main__":
     perform_feature_engineering()
