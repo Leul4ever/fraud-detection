@@ -1,8 +1,24 @@
-data/
-!data/README.md
-models/
-!models/README.md
-__pycache__/
-*.ipynb_checkpoints/
+# Environment
+venv/
 .env
+
+# Jupyter Notebooks
 .ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Data and Models - Ignore contents but keep directories
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+models/*
+!models/.gitkeep
+
+# Root level folders to ignore if necessary
+/.pytest_cache/
+/reports/

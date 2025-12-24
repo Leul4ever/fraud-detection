@@ -8,8 +8,6 @@
 
 In the rapidly evolving digital landscape, fraudulent transactions pose a significant threat to financial security and user trust. This project aims to build a robust **Fraud Detection System** that analyzes transaction patterns in e-commerce and banking data to identify and prevent malicious activities.
 
-By leveraging advanced machine learning techniques, we seek to distinguish legitimate users from bad actors, ensuring safer transactions for both consumers and businesses.
-
 ## 🚀 Project Context
 
 This project is part of a comprehensive data science workflow aimed at:
@@ -18,75 +16,44 @@ This project is part of a comprehensive data science workflow aimed at:
 3. **Handling class imbalance** (since fraud cases are rare).
 4. **Developing real-time detection** APIs and interactive dashboards.
 
-## 📁 Complete Project Structure
+## 📁 Project Structure
+
+Following the project requirements, the repository is organized as follows:
 
 ```
 fraud-detection/
+├── .vscode/
+│   └── settings.json             # Workspace settings
 ├── .github/
 │   └── workflows/
-│       └── unittests.yml          # CI/CD pipeline for automated testing
-│
-├── data/
-│   ├── raw/                        # Raw data files (not in git)
-│   ├── processed/                  # Processed data files (not in git)
-│   └── README.md                  # Detailed data documentation
-│
-├── notebooks/                      # Jupyter notebooks for analysis
-│   ├── eda-fraud-data.ipynb       # EDA for e-commerce fraud data
-│   ├── eda-creditcard.ipynb       # EDA for credit card fraud data
-│   ├── feature-engineering.ipynb  # Feature engineering process
-│   ├── data-transformation.ipynb  # Data transformation and SMOTE
+│       └── unittests.yml         # CI/CD pipeline
+├── data/                         # Project datasets (ignored except documentation)
+│   ├── raw/                      # Original, immutable datasets
+│   └── processed/                # Cleaned and feature-engineered data
+├── notebooks/
+│   ├── __init__.py
+│   ├── eda-fraud-data.ipynb       # EDA for e-commerce data
+│   ├── eda-creditcard.ipynb       # EDA for bank credit data
+│   ├── feature-engineering.ipynb  # Feature engineering logic
 │   ├── modeling.ipynb              # Model building and evaluation
-│   ├── shap-explainability.ipynb  # Model interpretability (Future)
+│   ├── shap-explainability.ipynb  # Model interpretability
 │   └── README.md                  # Notebooks documentation
-│
-├── src/                            # Core production-ready modules
-│   ├── data_cleaning.py           # Data cleaning logic
-│   ├── feature_engineering.py     # Feature engineering logic
-│   ├── data_transformation.py     # Scaling, encoding, SMOTE logic
-│   ├── model_training.py          # Model training & CV logic
-│   ├── __init__.py                # Package initializer
-│   └── README.md                  # Source code documentation
-│
-├── scripts/                        # Entry-point scripts and runners
-│   ├── run_data_pipeline.py       # End-to-end pipeline runner
-│   ├── create_test_data.py        # Test data generation script
-│   └── README.md                  # Scripts documentation
-│
-├── models/                         # Trained models and scalers
-│   ├── best_model_fraud_data.pkl  # Final XGBoost model for fraud
-│   ├── best_model_credit_card.pkl # Final XGBoost model for credit card
-│   ├── fraud_scaler.pkl           # StandardScaler for fraud data
-│   ├── credit_scaler.pkl          # StandardScaler for credit card data
-│   └── README.md                  # Models documentation
-│
-├── reports/                        # Analysis reports and visualizations
-│   ├── figures/                    # Generated plots and charts
-│   │   ├── fraud_class_distribution.png
-│   │   ├── fraud_univariate_analysis.png
-│   │   ├── fraud_purchase_value_vs_class.png
-│   │   ├── fraud_rate_by_country.png
-│   │   ├── fraud_smote_comparison.png
-│   │   ├── creditcard_class_distribution.png
-│   │   ├── creditcard_amount_distribution.png
-│   │   ├── creditcard_bivariate_analysis.png
-│   │   ├── creditcard_feature_engineering.png
-│   │   └── creditcard_smote_comparison.png
-│   ├── interim-report.md          # Task 1 comprehensive report
-│   ├── task-2.md                  # Task 2 comprehensive report
-│   └── model_comparison_results.csv # Metrics for all models
-│
-├── tests/                          # Unit and integration tests
-│   ├── conftest.py                # Pytest fixtures and configuration
-│   ├── test_data_cleaning.py      # Data cleaning tests
-│   ├── test_feature_engineering.py # Feature engineering tests
-│   └── test_data_transformation.py # Data transformation tests
-│
-├── venv/                           # Virtual environment (not in git)
-│
-├── .gitignore                      # Git ignore rules
-├── requirements.txt                # Python dependencies
-└── README.md                       # This file
+├── src/                          # Core production modules
+│   ├── __init__.py
+│   ├── data_cleaning.py
+│   ├── feature_engineering.py
+│   ├── data_transformation.py
+│   └── model_training.py
+├── tests/                        # Automated unit tests
+│   ├── __init__.py
+│   └── ...
+├── models/                       # Saved model artifacts (.pkl files)
+├── scripts/                      # Runner scripts
+│   ├── __init__.py
+│   └── README.md
+├── requirements.txt              # Project dependencies
+├── README.md                     # Main documentation
+└── .gitignore                    # Git ignore rules
 ```
 
 ## 🛠️ Installation & Setup
@@ -132,178 +99,42 @@ fraud-detection/
 ## 📈 Roadmap (Tasks)
 
 ### ✅ Task 1: Data Preprocessing & EDA (Completed)
-
-**Objective:** Prepare clean, feature-rich datasets ready for modeling.
-
-**Completed Components:**
-
-- **Data Cleaning:**
-  - ✅ Missing value handling with justification
-  - ✅ Duplicate removal
-  - ✅ Data type corrections (datetime, integer conversions)
-
-- **Exploratory Data Analysis:**
-  - ✅ Univariate analysis (distributions of key variables)
-  - ✅ Bivariate analysis (relationships between features and target)
-  - ✅ Class distribution analysis (quantified imbalance)
-
-- **Geolocation Integration (Fraud_Data.csv):**
-  - ✅ IP addresses converted to integer format
-  - ✅ Range-based merge with IpAddress_to_Country.csv
-  - ✅ Fraud patterns analyzed by country
-
-- **Feature Engineering (Fraud_Data.csv):**
-  - ✅ Transaction frequency features (user_id_count, device_id_count)
-  - ✅ Time-based features (hour_of_day, day_of_week, time_since_signup)
-  - ✅ Velocity features (user_transaction_velocity)
-
-- **Data Transformation:**
-  - ✅ StandardScaler for numerical features
-  - ✅ OneHotEncoder for categorical features
-
-- **Class Imbalance Handling:**
-  - ✅ SMOTE applied to training data only
-  - ✅ Justification documented
-  - ✅ Class distribution before/after documented
-
-**Deliverables:**
-- Clean, processed datasets in `data/processed/`
-- Comprehensive EDA notebooks with visualizations
-- Feature-engineered datasets ready for modeling
-- Detailed interim report with findings
-
-**See:** [`reports/interim-report.md`](reports/interim-report.md) for complete Task 1 report
+- **Data Cleaning**: Missing values, duplicates, and type corrections.
+- **EDA**: Univariate/Bivariate analysis and class distribution.
+- **Geolocation**: Mapping IP addresses to countries.
+- **Feature Engineering**: Frequency, velocity, and time-based features.
+- **Transformation**: Scaling and SMOTE for imbalance handling.
 
 ### ✅ Task 2: Model Building & Training (Completed)
-
-**Objective:** Build, train, and evaluate classification models to detect fraudulent transactions.
-
-**Completed Components:**
-- **Baseline Modeling:**
-  - ✅ Logistic Regression trained as interpretable baseline
-- **Ensemble Modeling:**
-  - ✅ Random Forest (n=100, depth=10)
-  - ✅ XGBoost (n=100, depth=5, lr=0.1)
-- **Robustness:**
-  - ✅ 5-fold Stratified K-Fold Cross-Validation implemented
-- **Model Selection:**
-  - ✅ Side-by-side comparison of all models
-  - ✅ XGBoost selected as final model with documented justification
-
-**Evaluation Metrics:**
-- ✅ **AUC-PR:** Primary metric for class imbalance
-- ✅ **F1-Score:** Balanced performance measure
-- ✅ **Confusion Matrix:** Prediction visualization
-
-**See:** [`reports/task-2.md`](reports/task-2.md) for complete Task 2 report
+- **Baseline**: Logistic Regression (AUC-PR, F1-Score).
+- **Ensemble**: Random Forest & Tuned XGBoost.
+- **Stability**: 5-fold Stratified Cross-Validation.
+- **Selection**: XGBoost chosen for production based on AUC-PR.
 
 ### 📋 Task 3: Model Explainability (Planned)
-
-**Objective:** Interpret model predictions using SHAP to understand fraud detection drivers.
-
-**Planned Components:**
-- Feature importance analysis
-- SHAP summary plots
-- Individual prediction explanations
-- Business recommendations
+- SHAP global and local feature importance.
 
 ### 🚀 Task 4: Model Deployment (Planned)
-
-**Objective:** Deploy fraud detection model as a REST API.
-
-**Planned Components:**
-- Flask/FastAPI implementation
-- Model serving endpoint
-- Request/response handling
-- API documentation
+- REST API serving with Flask/FastAPI.
 
 ### 📊 Task 5: Interactive Dashboard (Planned)
-
-**Objective:** Create interactive dashboard for fraud detection monitoring.
-
-**Planned Components:**
-- Streamlit/Dash dashboard
-- Real-time fraud detection
-- Visualization of predictions
-- Model performance metrics
+- Monitoring dashboard with Streamlit/Dash.
 
 ## 🧰 Tech Stack
-
-### Core Libraries
-- **Data Processing:** Pandas, NumPy
-- **Visualization:** Matplotlib, Seaborn
-- **Machine Learning:** Scikit-learn, Imbalanced-learn
-- **Testing:** Pytest
-- **CI/CD:** GitHub Actions
-
-### Future Additions
-- **Explainability:** SHAP, LIME
-- **API:** Flask/FastAPI
-- **Dashboard:** Streamlit/Dash
-
-## 📊 Dataset Overview
-
-### Fraud_Data.csv (E-commerce)
-- **Size:** ~151,000 transactions
-- **Features:** 11 original + 6 engineered = 17 total
-- **Class Distribution:** 90.64% legitimate, 9.36% fraud
-- **Key Features:** purchase_value, age, source, browser, country, time_since_signup
-
-### creditcard.csv (Banking)
-- **Size:** ~284,000 transactions
-- **Features:** 30 (Time, V1-V28, Amount, Class)
-- **Class Distribution:** 99.83% legitimate, 0.17% fraud
-- **Key Features:** Time, Amount, V1-V28 (PCA-transformed)
-
-## 🧪 Testing
-
-The project includes comprehensive unit tests:
-
-```bash
-# Run all tests
-pytest tests/ -v
-
-# Run specific test file
-pytest tests/test_data_cleaning.py -v
-
-# Run with coverage
-pytest tests/ --cov=scripts --cov-report=html
-```
-
-**Test Coverage:**
-- ✅ Data cleaning validation
-- ✅ Feature engineering verification
-- ✅ Data transformation checks
-- ✅ File existence and structure validation
-
-## 📝 Key Findings
-
-### Class Imbalance
-- **Fraud_Data:** 9.7:1 imbalance ratio (manageable with SMOTE)
-- **creditcard:** 599:1 imbalance ratio (extreme, requires careful handling)
-
-### Critical Fraud Indicators
-1. **Time Since Signup:** Transactions within hours of signup show high fraud rates
-2. **Transaction Frequency:** High-frequency users indicate bot activity
-3. **Geographic Patterns:** Certain countries show elevated fraud rates
-4. **Source/Browser:** Compromised channels identified
-5. **Amount Patterns:** Fraud clusters at lower purchase values
+- **Data**: Pandas, NumPy
+- **ML**: Scikit-learn, XGBoost, Imbalanced-learn
+- **Viz**: Matplotlib, Seaborn
+- **Testing**: Pytest & GitHub Actions
 
 ## 🤝 Contributing
-
-This project is part of the Kifiya AI Mentorship Program. For contributions, please follow the project guidelines and submit pull requests.
+Part of the **Kifiya AI Mentorship Program**.
 
 ## 📄 License
-
-This project is licensed under the MIT License.
+MIT License
 
 ## 👤 Author
-
 **Leul** - [GitHub](https://github.com/Leul4ever)
 
-Created as part of the **Kifiya AI Mentorship Program**.
-
 ---
-
 **Last Updated:** Task 2 Completed ✅  
 **Next Milestone:** Task 3 - Model Explainability
