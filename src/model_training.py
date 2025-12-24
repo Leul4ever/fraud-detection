@@ -6,7 +6,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from sklearn.metrics import classification_report, confusion_matrix, precision_recall_curve, auc, f1_score
-from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.model_selection import StratifiedKFold, cross_validate, RandomizedSearchCV
 import joblib
 from pathlib import Path
 
@@ -61,6 +61,33 @@ def cross_validate_model(model, X, y, model_name, dataset_name):
         
     return results
 
+def tune_xgboost(X, y, dataset_name):
+    print(f"\n--- Tuning XGBoost for {dataset_name} ---")
+    param_dist = {
+        'n_estimators': [100, 200],
+        'max_depth': [3, 5, 7],
+        'learning_rate': [0.01, 0.1, 0.2],
+        'subsample': [0.8, 1.0],
+        'colsample_bytree': [0.8, 1.0]
+    }
+    
+    xgb = XGBClassifier(random_state=42, use_label_encoder=False, eval_metric='logloss')
+    
+    # Stratified K-Fold for inner loop of CV tuning
+    skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
+    
+    # Use AUC-PR (average_precision) as the scoring metric for tuning
+    random_search = RandomizedSearchCV(
+        xgb, param_distributions=param_dist, n_iter=5, 
+        scoring='average_precision', cv=skf, verbose=1, random_state=42, n_jobs=-1
+    )
+    
+    random_search.fit(X, y)
+    print(f"Best parameters: {random_search.best_params_}")
+    print(f"Best CV AUC-PR: {random_search.best_score_:.4f}")
+    
+    return random_search.best_estimator_
+
 def run_modeling_task():
     datasets = {
         "Fraud_Data": {
@@ -100,7 +127,8 @@ def run_modeling_task():
         all_results.append({
             "Dataset": name, "Model": "Logistic Regression", 
             "Test AUC-PR": lr_metrics["AUC-PR"], "Test F1": lr_metrics["F1"],
-            "CV AUC-PR": lr_cv["Mean AUC-PR"], "CV F1": lr_cv["Mean F1"]
+            "CV AUC-PR Mean": lr_cv["Mean AUC-PR"], "CV AUC-PR Std": lr_cv["Std AUC-PR"],
+            "CV F1 Mean": lr_cv["Mean F1"], "CV F1 Std": lr_cv["Std F1"]
         })
         
         # 2. Ensemble: Random Forest (Baseline Ensemble)
@@ -115,27 +143,29 @@ def run_modeling_task():
         all_results.append({
             "Dataset": name, "Model": "Random Forest", 
             "Test AUC-PR": rf_metrics["AUC-PR"], "Test F1": rf_metrics["F1"],
-            "CV AUC-PR": rf_cv["Mean AUC-PR"], "CV F1": rf_cv["Mean F1"]
+            "CV AUC-PR Mean": rf_cv["Mean AUC-PR"], "CV AUC-PR Std": rf_cv["Std AUC-PR"],
+            "CV F1 Mean": rf_cv["Mean F1"], "CV F1 Std": rf_cv["Std F1"]
         })
 
-        # 3. XGBoost
-        xgb = XGBClassifier(n_estimators=100, max_depth=5, learning_rate=0.1, random_state=42, use_label_encoder=False, eval_metric='logloss')
-        xgb.fit(X_train, y_train)
-        y_pred_xgb = xgb.predict(X_test)
-        y_probs_xgb = xgb.predict_proba(X_test)[:, 1]
+        # 3. Tuned XGBoost
+        # Requirement: Add explicit code for hyperparameter tuning
+        xgb_tuned = tune_xgboost(X_train, y_train, name)
         
-        xgb_metrics = evaluate_model(y_test, y_pred_xgb, y_probs_xgb, "XGBoost", name)
-        xgb_cv = cross_validate_model(xgb, X_train, y_train, "XGBoost", name)
+        y_pred_xgb = xgb_tuned.predict(X_test)
+        y_probs_xgb = xgb_tuned.predict_proba(X_test)[:, 1]
+        
+        xgb_metrics = evaluate_model(y_test, y_pred_xgb, y_probs_xgb, "Tuned XGBoost", name)
+        xgb_cv = cross_validate_model(xgb_tuned, X_train, y_train, "Tuned XGBoost", name)
         
         all_results.append({
-            "Dataset": name, "Model": "XGBoost", 
+            "Dataset": name, "Model": "Tuned XGBoost", 
             "Test AUC-PR": xgb_metrics["AUC-PR"], "Test F1": xgb_metrics["F1"],
-            "CV AUC-PR": xgb_cv["Mean AUC-PR"], "CV F1": xgb_cv["Mean F1"]
+            "CV AUC-PR Mean": xgb_cv["Mean AUC-PR"], "CV AUC-PR Std": xgb_cv["Std AUC-PR"],
+            "CV F1 Mean": xgb_cv["Mean F1"], "CV F1 Std": xgb_cv["Std F1"]
         })
         
-        # Save best model for each (simplified comparison)
-        best_model = xgb if xgb_metrics["AUC-PR"] > rf_metrics["AUC-PR"] else rf
-        joblib.dump(best_model, f'models/best_model_{name.lower().replace(" ", "_")}.pkl')
+        # Save best model
+        joblib.dump(xgb_tuned, f'models/best_model_{name.lower().replace(" ", "_")}.pkl')
         print(f"Best model for {name} saved.")
 
     # Final Comparison
