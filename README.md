@@ -63,6 +63,8 @@ fraud-detection/
 │   └── __init__.py
 │
 ├── models/                         # Trained models and scalers
+│   ├── best_model_fraud_data.pkl  # Final XGBoost model for fraud
+│   ├── best_model_credit_card.pkl # Final XGBoost model for credit card
 │   ├── fraud_scaler.pkl           # StandardScaler for fraud data
 │   └── credit_scaler.pkl           # StandardScaler for credit card data
 │
@@ -79,7 +81,8 @@ fraud-detection/
 │   │   ├── creditcard_feature_engineering.png
 │   │   └── creditcard_smote_comparison.png
 │   ├── interim-report.md          # Task 1 comprehensive report
-│   └── task1.md                   # Task 1 summary
+│   ├── task-2.md                  # Task 2 comprehensive report
+│   └── model_comparison_results.csv # Metrics for all models
 │
 ├── tests/                          # Unit and integration tests
 │   ├── conftest.py                # Pytest fixtures and configuration
@@ -179,22 +182,28 @@ fraud-detection/
 
 **See:** [`reports/interim-report.md`](reports/interim-report.md) for complete Task 1 report
 
-### 🔄 Task 2: Model Building & Training (In Progress)
+### ✅ Task 2: Model Building & Training (Completed)
 
 **Objective:** Build, train, and evaluate classification models to detect fraudulent transactions.
 
-**Planned Components:**
-- Baseline model (Logistic Regression)
-- Ensemble models (Random Forest, XGBoost, LightGBM)
-- Hyperparameter tuning
-- Cross-validation (Stratified K-Fold)
-- Model comparison and selection
+**Completed Components:**
+- **Baseline Modeling:**
+  - ✅ Logistic Regression trained as interpretable baseline
+- **Ensemble Modeling:**
+  - ✅ Random Forest (n=100, depth=10)
+  - ✅ XGBoost (n=100, depth=5, lr=0.1)
+- **Robustness:**
+  - ✅ 5-fold Stratified K-Fold Cross-Validation implemented
+- **Model Selection:**
+  - ✅ Side-by-side comparison of all models
+  - ✅ XGBoost selected as final model with documented justification
 
 **Evaluation Metrics:**
-- AUC-PR (Area Under Precision-Recall Curve)
-- F1-Score
-- Confusion Matrix
-- Precision and Recall
+- ✅ **AUC-PR:** Primary metric for class imbalance
+- ✅ **F1-Score:** Balanced performance measure
+- ✅ **Confusion Matrix:** Prediction visualization
+
+**See:** [`reports/task-2.md`](reports/task-2.md) for complete Task 2 report
 
 ### 📋 Task 3: Model Explainability (Planned)
 
@@ -236,7 +245,6 @@ fraud-detection/
 - **CI/CD:** GitHub Actions
 
 ### Future Additions
-- **Modeling:** XGBoost, LightGBM
 - **Explainability:** SHAP, LIME
 - **API:** Flask/FastAPI
 - **Dashboard:** Streamlit/Dash
@@ -305,5 +313,5 @@ Created as part of the **Kifiya AI Mentorship Program**.
 
 ---
 
-**Last Updated:** Task 1 Completed ✅  
-**Next Milestone:** Task 2 - Model Building
+**Last Updated:** Task 2 Completed ✅  
+**Next Milestone:** Task 3 - Model Explainability
