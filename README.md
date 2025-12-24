@@ -111,8 +111,10 @@ fraud-detection/
 - **Stability**: 5-fold Stratified Cross-Validation.
 - **Selection**: XGBoost chosen for production based on AUC-PR.
 
-### 📋 Task 3: Model Explainability (Planned)
-- SHAP global and local feature importance.
+### ✅ Task 3: Model Explainability (Completed)
+- **Global Importance**: Identified `day_of_week` and `country_Japan` as top drivers using SHAP.
+- **Local Explanations**: Visualized individual fraud/non-fraud decisions using Waterfall plots.
+- **Business Insights**: Developed targeted authentication strategies based on feature attribution.
 
 ### 🚀 Task 4: Model Deployment (Planned)
 - REST API serving with Flask/FastAPI.
@@ -136,5 +138,5 @@ MIT License
 **Leul** - [GitHub](https://github.com/Leul4ever)
 
 ---
-**Last Updated:** Task 2 Completed ✅  
-**Next Milestone:** Task 3 - Model Explainability
+**Last Updated:** Task 3 Completed ✅  
+**Next Milestone:** Task 4 - Model Deployment
