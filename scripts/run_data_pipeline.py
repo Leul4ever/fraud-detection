@@ -17,14 +17,14 @@ def main():
     
     # Get the project root directory
     project_root = Path(__file__).parent.parent
-    scripts_dir = project_root / "scripts"
+    src_dir = project_root / "src"
     
     # Step 1: Data Cleaning
     print("\n[Step 1/3] Data Cleaning...")
     print("-" * 60)
     try:
         result = subprocess.run(
-            [sys.executable, str(scripts_dir / "data_cleaning.py")],
+            [sys.executable, str(src_dir / "data_cleaning.py")],
             cwd=str(project_root),
             check=True,
             capture_output=False
@@ -39,7 +39,7 @@ def main():
     print("-" * 60)
     try:
         result = subprocess.run(
-            [sys.executable, str(scripts_dir / "feature_engineering.py")],
+            [sys.executable, str(src_dir / "feature_engineering.py")],
             cwd=str(project_root),
             check=True,
             capture_output=False
@@ -54,7 +54,7 @@ def main():
     print("-" * 60)
     try:
         result = subprocess.run(
-            [sys.executable, str(scripts_dir / "data_transformation.py")],
+            [sys.executable, str(src_dir / "data_transformation.py")],
             cwd=str(project_root),
             check=True,
             capture_output=False
