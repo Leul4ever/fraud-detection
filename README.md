@@ -28,45 +28,37 @@ fraud-detection/
 │
 ├── data/
 │   ├── raw/                        # Raw data files (not in git)
-│   │   ├── Fraud_Data.csv         # E-commerce transaction data
-│   │   ├── creditcard.csv         # Bank credit card transaction data
-│   │   └── IpAddress_to_Country.csv  # IP to country mapping
-│   │
-│   └── processed/                  # Processed data files (not in git)
-│       ├── Fraud_Data_cleaned.csv
-│       ├── Fraud_Data_features.csv
-│       ├── creditcard_cleaned.csv
-│       ├── creditcard_features.csv
-│       ├── Fraud_X_train.csv, Fraud_X_test.csv
-│       ├── Fraud_y_train.csv, Fraud_y_test.csv
-│       ├── Credit_X_train.csv, Credit_X_test.csv
-│       └── Credit_y_train.csv, Credit_y_test.csv
+│   ├── processed/                  # Processed data files (not in git)
+│   └── README.md                  # Detailed data documentation
 │
 ├── notebooks/                      # Jupyter notebooks for analysis
 │   ├── eda-fraud-data.ipynb       # EDA for e-commerce fraud data
 │   ├── eda-creditcard.ipynb       # EDA for credit card fraud data
 │   ├── feature-engineering.ipynb  # Feature engineering process
 │   ├── data-transformation.ipynb  # Data transformation and SMOTE
-│   ├── modeling.ipynb              # Model building (Future)
-│   ├── shap-explainability.ipynb  # Model explainability (Future)
+│   ├── modeling.ipynb              # Model building and evaluation
+│   ├── shap-explainability.ipynb  # Model interpretability (Future)
 │   └── README.md                  # Notebooks documentation
 │
-├── scripts/                        # Production-ready Python modules
-│   ├── data_cleaning.py           # Data cleaning functions
-│   ├── feature_engineering.py     # Feature engineering pipeline
-│   ├── data_transformation.py     # Scaling, encoding, SMOTE
-│   ├── run_data_pipeline.py       # Complete data pipeline runner
-│   ├── create_test_data.py        # Test data generation
-│   └── README.md                  # Scripts documentation
+├── src/                            # Core production-ready modules
+│   ├── data_cleaning.py           # Data cleaning logic
+│   ├── feature_engineering.py     # Feature engineering logic
+│   ├── data_transformation.py     # Scaling, encoding, SMOTE logic
+│   ├── model_training.py          # Model training & CV logic
+│   ├── __init__.py                # Package initializer
+│   └── README.md                  # Source code documentation
 │
-├── src/                            # Source code (for future API/dashboard)
-│   └── __init__.py
+├── scripts/                        # Entry-point scripts and runners
+│   ├── run_data_pipeline.py       # End-to-end pipeline runner
+│   ├── create_test_data.py        # Test data generation script
+│   └── README.md                  # Scripts documentation
 │
 ├── models/                         # Trained models and scalers
 │   ├── best_model_fraud_data.pkl  # Final XGBoost model for fraud
 │   ├── best_model_credit_card.pkl # Final XGBoost model for credit card
 │   ├── fraud_scaler.pkl           # StandardScaler for fraud data
-│   └── credit_scaler.pkl           # StandardScaler for credit card data
+│   ├── credit_scaler.pkl          # StandardScaler for credit card data
+│   └── README.md                  # Models documentation
 │
 ├── reports/                        # Analysis reports and visualizations
 │   ├── figures/                    # Generated plots and charts
